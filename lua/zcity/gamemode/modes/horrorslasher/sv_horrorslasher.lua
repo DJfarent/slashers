@@ -53,6 +53,8 @@ local ACWeapons = {
 local TELEPORT_WARMUP = 15 -- seconds
 local TELEPORT_COOLDOWN = 20 -- seconds
 
+local HIDE_TIME = 60 -- seconds victims get to hide before the slasher can deal damage
+
 MODE.LootTable = {
 	{38, {
 		{3,"weapon_tourniquet"},
@@ -203,6 +205,8 @@ swatSpawned = false
 swatcalled = false
 swatCallTime = 0
  SetGlobalBool("SlasherPoliceCalled", false)
+
+ SetGlobalFloat("SlasherHideEnd", CurTime() + HIDE_TIME)
 
 end
  
@@ -490,5 +494,16 @@ function MODE:CanLaunch()
     return true
  
 end
- 
+
+hook.Add("EntityTakeDamage", "Slasher_HideTimer_BlockDamage", function(target, dmginfo)
+    local attacker = dmginfo:GetAttacker()
+
+    if not IsValid(attacker) or not attacker:IsPlayer() then return end
+    if attacker.slasherRole ~= "slasher" then return end
+
+    if CurTime() < GetGlobalFloat("SlasherHideEnd", 0) then
+        return true
+    end
+end)
+
 return MODE

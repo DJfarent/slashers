@@ -67,6 +67,16 @@ end)
 
 function MODE:HUDPaint()
     if lply:Team() == TEAM_SPECTATOR then return end
+
+    local hideEnd = GetGlobalFloat("SlasherHideEnd", 0)
+    if hideEnd > CurTime() then
+        local color = Color(255 * -math.sin(CurTime() * 3), 25, 255 * math.sin(CurTime() * 3))
+        local text = "Hide! The Slasher hunts in: " .. string.FormattedTime(hideEnd - CurTime(), "%02i:%02i")
+
+        draw.SimpleText(text, "ZB_HomicideMedium", sw * 0.5, sh * 0.95, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(text, "ZB_HomicideMedium", (sw * 0.5) - 2, (sh * 0.95) - 2, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+
     if StartTime + 12 < CurTime() then return end
 
     fade = Lerp(FrameTime(), fade, math.Clamp(StartTime + 5 - CurTime(), -2, 2))
